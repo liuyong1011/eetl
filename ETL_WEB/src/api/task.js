@@ -145,3 +145,13 @@ export async function fieldMapping(dbType,json){
     }
   });
 }
+
+// 预留参数返回是否可选定触发状态
+export async function paramsValueState(param){
+  return request('/api/V1/etl/read/aboutParamsAndSchedule', {
+    method: 'GET',
+    params: {
+      param:param
+    }
+  });
+}

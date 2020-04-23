@@ -139,7 +139,7 @@ const DataSourceConfigModel = {
       const data  = yield call(createByJdbcUrl,datas);
       console.log(data)
       if(data.code === 200){
-        message.success(data.message , 2);
+        message.success(data.message , 4);
         callback();
       }else {
           message.error(data.message , 4);
@@ -153,7 +153,7 @@ const DataSourceConfigModel = {
         const data  = yield call(createSubitem,datas);
         console.log(data)
         if(data.code === 200){
-            message.success(data.message , 3);
+            message.success(data.message , 4);
 
           // callback();
         }else {
@@ -168,7 +168,7 @@ const DataSourceConfigModel = {
         const data  = yield call(textLinkByJdbc,datas);
         console.log(data)
         if(data.code === 200){
-            message.success(data.message , 3);
+            message.success(data.message , 4);
             callback();
         }else {
             message.error(data.message , 4);
@@ -181,7 +181,7 @@ const DataSourceConfigModel = {
         const data  = yield call(textLinkSubitem,datas);
         console.log(data)
         if(data.code === 200){
-            message.success(data.message , 3);
+            message.success(data.message , 4);
             callback();
         }else {
             message.error(data.message , 4);
@@ -193,7 +193,7 @@ const DataSourceConfigModel = {
         const data  = yield call(deleteTData,datas);
         console.log(data)
         if(data.code === 200){
-            message.success(data.message , 3);
+            message.success(data.message , 4);
           callback();
         }else {
             message.error(data.message , 4);
@@ -205,7 +205,7 @@ const DataSourceConfigModel = {
         const data  = yield call(updateTData,datas);
         console.log(data)
         if(data.code === 200){
-            message.success(data.message , 3);
+            message.success(data.message , 4);
           callback();
         }else {
             message.error(data.message , 4);

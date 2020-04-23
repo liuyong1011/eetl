@@ -36,7 +36,7 @@ export async function updateTree(params) {
 }
 //查询前置任务列表树形
 export async function getQueryTreeList(params) {
-  return request('/api/V1/etl/taskConfig/queryTreeList', {
+  return request('/api/V1/etl/taskConfig/queryPreList', {
     method: 'GET',
     params: params,
   });

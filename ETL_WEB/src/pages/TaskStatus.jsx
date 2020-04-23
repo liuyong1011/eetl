@@ -5,6 +5,8 @@ import SockJsClient from 'react-stomp';
 import moment from 'moment';
 import hdfs from '@/img/hdfs.jpg'
 const dateFormat = 'YYYY-MM-DD ';
+// import locale from 'antd/es/date-picker/locale/zh_CN';
+// import 'moment/locale/zh-cn';
 // import { ExclamationCircleOutlined } from '@ant-design/icons'
 // import connect from '../websocket/app'
 const { Search } = Input
@@ -68,16 +70,18 @@ class TaskStatus extends Component {
           iptValue:"",
           msgList:[],
           evt:'',
-          date:"2020-04-04",
+          date:null,
           reserved:false,
           params:[],
           chain:false,
           nExecStateDesc:"",
           localtime: y+'-'+m+'-'+d+' ' +h+':'+i+':'+s,
+          // localt: 2020-04-23 ,
           Input:"",
           obj:{},
           text:{},
           valuee:"",
+          shijian:"2020-04-23"
           // zhuangtai:false
           // dateString:""
           // fws:false,
@@ -333,7 +337,7 @@ class TaskStatus extends Component {
     }
     render() { 
       let { resetFields } = this.props.form
-      let {dataSource1,dataSource2,dataSource3,key,valuee,msgList,common,iptValue,total,cId,currentPage,msg}=this.state
+      let {dataSource1,dataSource2,dataSource3,key,date,msgList,common,iptValue,total,cId,currentPage,msg}=this.state
         return ( 
           <div style={{paddingLeft:30,paddingRight:30}}>
             <Search
@@ -510,14 +514,16 @@ class TaskStatus extends Component {
                   onOk={()=>{this.setState({
                     date:"",
                     visible:false,
-                    journal:[]
+                    journal:[],
+                    msgList:[]
                     // dateString:""
                   })}}
                   onCancel={()=>{this.setState({
                     visible:false,
                     date:"",
                     // dateString:""
-                    journal:[]
+                    journal:[],
+                    msgList:[]
                   },()=>{
                     this.disconnect = (a) => {//断开连接
                       this.clientRef.disconnect()
@@ -526,14 +532,26 @@ class TaskStatus extends Component {
                 >
                   <Fragment>
                     <DatePicker 
-                      defaultValue={moment(this.state.date, dateFormat)} format={dateFormat}
+                    // 取消清除按钮
+                      allowClear ={false}
+                      // locale={locale}
+                      // defaultValue={moment(date=null?this.state.shijian:date)}
+                      defaultValue={moment(date=null?this.state.shijian:date, dateFormat)}
+                      // value={date=null?this.state.shijian:moment(date,dateFormat)}
+                      format={dateFormat}
+                      placeholder="请选择日期时间"
                       onChange={(date,dateString)=>{
+                       this.setState({
+                        journal:[],
+                        msgList:[]
+                       })
                        console.log("点击日期",date,dateString)
                       showHisLog(cId,dateString)
                       .then(res=>{
                         console.log(res)
                         this.setState({
                           journal:res.data,
+                          msgList:[]
                         },()=>{
                           this.disconnect = (a) => {//断开连接
                             this.clientRef.disconnect()
@@ -544,8 +562,11 @@ class TaskStatus extends Component {
                       //  console.log(s)
                     }}/>
                     <br />
-                    <SockJsClient url='http://10.16.0.109:7070/etl-service/subTask' topics={['/topic/taskLog/' + cId + '/response']}
-                    // <SockJsClient url='http://10.16.100.96:7070/etl-service/subTask' topics={['/topic/taskLog/' + cId + '/response']}
+                    {/* 测试 环境*/}
+                    {/* <SockJsClient url='http://10.16.0.109:7070/etl-service/subTask' topics={['/topic/taskLog/' + cId + '/response']} */}
+                    
+                    {/* //  上线环境 */}
+                   <SockJsClient url='http://10.5.80.115:7070/etl-service/subTask' topics={['/topic/taskLog/' + cId + '/response']}
                     onMessage={(msg) => { 
                       msgList.push(msg)
                       this.setState({
@@ -553,7 +574,8 @@ class TaskStatus extends Component {
                       })
                      }}
                     ref={(client) => { this.clientRef = client }} />
-                    
+                    {/* 修改 */}
+                    {/* {this.state.msgList?} */}
                     {this.state.msgList.map(item=>{
                       return(
                         <div>

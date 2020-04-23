@@ -29,6 +29,7 @@ class DataSourceConfig extends Component {
         TDataKeys: {},
         pageNum:1,
         pageSize:12,
+        cId:""
     };
   }
   componentDidMount(){
@@ -146,6 +147,9 @@ class DataSourceConfig extends Component {
   //展示数据源详情
   showDrawer = (item) => {
     console.log(item);
+    this.setState({
+      cId:item.cId
+    })
     let {dispatch} = this.props
   
     let datas={
@@ -336,6 +340,60 @@ class DataSourceConfig extends Component {
     })
   }
   cancelEditor= () => {
+    const form1 = this.form1
+    form1.resetFields();
+    let {dispatch} = this.props
+  
+    let datas={
+      cId:this.state.cId
+    }
+    const callback=()=>{
+      let {tDataDetails} = this.props
+      const form1 = this.form1
+      form1.setFieldsValue({
+        cDatasourceName: tDataDetails.cDatasourceName,
+        cId :  tDataDetails.cId,
+        cDbName: tDataDetails.cDbName ,
+        nDbType : tDataDetails.nDbType,
+        nDbTypeName :  tDataDetails.nDbTypeName, 
+        cSchema :   tDataDetails.cSchema,
+        cIp :  tDataDetails.cIp ,
+        cPort :  tDataDetails.cPort ,
+        cUsername :   tDataDetails.cUsername,
+        cPassword :  tDataDetails.cPassword ,
+        nMetadataDbType :  tDataDetails.nMetadataDbType, 
+        nMetadataDbTypeName : tDataDetails.nMetadataDbTypeName, 
+        cMetadataDbName :   tDataDetails.cMetadataDbName,
+        cMetadataIp :   tDataDetails.cMetadataIp ,
+        cMetadataPort :  tDataDetails.cMetadataPort ,
+        cMetadataUsername :  tDataDetails.cMetadataUsername,
+        cMetadataPassword :  tDataDetails.cMetadataPassword,
+        jdbcUrl :  tDataDetails.jdbcUrl,
+      })
+      if (tDataDetails.nDbType==6) {
+        this.setState({
+          cMetaState: true,
+        },()=>{
+          form1.setFieldsValue({
+            cDataFilePath: tDataDetails.cDataFilePath,
+            nMetadataDbType :  tDataDetails.nMetadataDbType, 
+            nMetadataDbTypeName : tDataDetails.nMetadataDbTypeName, 
+            cMetadataDbName :   tDataDetails.cMetadataDbName,
+            cMetadataPassword :  tDataDetails.cMetadataPassword,
+            cMetadataIp :   tDataDetails.cMetadataIp ,
+            cMetadataPort :  tDataDetails.cMetadataPort ,
+            cMetadataUsername :  tDataDetails.cMetadataUsername,
+         })
+        })
+      }
+      this.setState({
+        detailsSpinning:false
+      })
+    }
+    dispatch({
+      type: 'DataSourceConfigModel/getTDatasourceDetails',
+      payload: {datas,callback},
+    })
     this.setState({
       editorMark: true,
     });
@@ -873,7 +931,7 @@ class TaskForm extends React.Component {
                   </FormItem>
                   <FormItem {...formItemLayout} label="元数据所在库类型:">
                       {getFieldDecorator('nMetadataDbType', {
-                      rules: [{ required: true, message: '请输入元数据所在库类型！' }, { message: '请不要输入空白字符！', whitespace: true }]
+                      rules: [{ required: true, message: '请输入元数据所在库类型！' }]
                       })(
                         <Select >
                               <Option value={1}>oracle</Option>

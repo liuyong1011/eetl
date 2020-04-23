@@ -1,5 +1,5 @@
 import React, { Component,Fragment } from 'react';
-import { Tabs,Table,Modal,DatePicker,Input,Pagination,Button,message } from 'antd';
+import { Tabs,Table,Modal,DatePicker,Input,Pagination,Button,message,Form } from 'antd';
 import {Task,realTimeLog,showHisLog,startTask,reservedParameters,taskChain,uploadParameters} from '@/api/task'
 import SockJsClient from 'react-stomp';
 import moment from 'moment';
@@ -68,16 +68,18 @@ class TaskStatus extends Component {
           iptValue:"",
           msgList:[],
           evt:'',
-          date:"2020-04-04",
+          date:null,
           reserved:false,
           params:[],
           chain:false,
           nExecStateDesc:"",
           localtime: y+'-'+m+'-'+d+' ' +h+':'+i+':'+s,
+          localt: y+'-'+m+'-'+d ,
           Input:"",
           obj:{},
           text:{},
-          valuee:""
+          valuee:"",
+          // zhuangtai:false
           // dateString:""
           // fws:false,
         } 
@@ -175,59 +177,6 @@ class TaskStatus extends Component {
                       })
                       this.state.evt=e.currentTarget
                       console.log("按钮上面得e",e)
-                          // confirm({
-                          //   title: '确定启动该任务吗？',
-                          //   // icon: <ExclamationCircleOutlined />,
-                          //   onOk:()=>{
-                          //     console.log("text",text)
-                          //     console.log(record.cId,record.nExecStateDesc);
-                          //     let a = this.state.dataSource1.indexOf(text)
-                          //     // this.state.evt.setAttribute("disabled","true")
-                          //     // this.state.dataSource1[a].nExecStateDesc='正在同步中'
-                          //     // this.state.dataSource1[a].fws=true
-                          //     // this.state.fws=true
-                          //     startTask(record.cId)
-                          //     .then(res=>{
-                          //       console.log("成功失败数据",res)
-                          //       if(res.code===500){
-                          //         message.error("失败",3)
-                          //       }
-                          //       if(res.code===200 && res.data.length==0){
-                          //         this.state.evt.setAttribute("disabled","true")
-                          //         this.state.dataSource1[a].nExecStateDesc='正在同步中'
-                          //         this.state.dataSource1[a].dtBeginDate= this.state.localtime
-                          //         message.success("成功",3)
-                          //       }
-                          //       if(res.code===200 && res.data.length!==0){
-                          //         message.error(res.data,3)
-                          //       } 
-                          //       // if(res.code===200){
-                          //       //   console.log("成功失败数据",res)
-                          //       //   if(res.data==null){
-                          //       //     message.success("成功",4)
-                          //       //     this.state.evt.setAttribute("disabled","true")
-                          //       //     this.state.dataSource1[a].nExecStateDesc='正在同步中'
-                          //       //   }else{
-                          //       //     message.error(res.data || "失败",1)
-                          //       //   }
-                          //       // }
-                          //       // if(res.code===200 && res.data==null){
-                          //       //   console.log(res)
-                          //       //   message.success(res.data,5)
-                          //       //   this.state.evt.setAttribute("disabled","true")
-                          //       //   this.state.dataSource1[a].nExecStateDesc='正在同步中'
-                          //       // }else{
-                          //       //   message.error(res.data,3)
-                          //       // }
-                          //     })
-                          //     this.setState({
-                          //       dataSource1:this.state.dataSource1
-                          //     })
-                          //   },
-                          //   onCancel() {
-                          //     console.log('Cancel');
-                          //   },
-                          // });
                           // 预留接口
                           reservedParameters(record.cId)
                           .then(res=>{
@@ -235,15 +184,10 @@ class TaskStatus extends Component {
                           if(res.data==null){
                             confirm({
                               title: '确定启动该任务吗？',
-                              // icon: <ExclamationCircleOutlined />,
                               onOk:()=>{
                                 console.log("text",text)
                                 console.log(record.cId,record.nExecStateDesc);
                                 let a = this.state.dataSource1.indexOf(text)
-                                // this.state.evt.setAttribute("disabled","true")
-                                // this.state.dataSource1[a].nExecStateDesc='正在同步中'
-                                // this.state.dataSource1[a].fws=true
-                                // this.state.fws=true
                                 startTask(record.cId)
                                 .then(res=>{
                                   console.log("成功失败数据",res)
@@ -251,32 +195,27 @@ class TaskStatus extends Component {
                                     message.error("失败",3)
                                   }
                                   if(res.code===200 && res.data.length==0){
-                                    this.state.evt.setAttribute("disabled","true")
-                                    this.state.dataSource1[a].nExecStateDesc='正在同步中'
-                                    this.state.dataSource1[a].dtBeginDate= this.state.localtime
-                                    message.success("成功",3)
+                                    // this.state.evt.setAttribute("disabled","true")
+                                    // this.state.dataSource1[a].nExecStateDesc='正在同步中'
+                                    // this.state.dataSource1[a].zhuangtai=true
+                                    // this.state.dataSource1[a].dtBeginDate= this.state.localtime
+                                    // message.success("成功",3)
+                                    this.setState({
+
+                                    },()=>{
+                                      record.nExecStateDesc='正在同步中'
+                                      record.zhuangtai=true
+                                      record.dtBeginDate= this.state.localtime
+                                      message.success("成功",3)
+                                    })
+                                    // this.state.dataSource1[a].nExecStateDesc='正在同步中'
+                                    // this.state.dataSource1[a].zhuangtai=true
+                                    // this.state.dataSource1[a].dtBeginDate= this.state.localtime
+                                    // message.success("成功",3)
                                   }
                                   if(res.code===200 && res.data.length!==0){
                                     message.error(res.data,3)
                                   } 
-                                  // if(res.code===200){
-                                  //   console.log("成功失败数据",res)
-                                  //   if(res.data==null){
-                                  //     message.success("成功",4)
-                                  //     this.state.evt.setAttribute("disabled","true")
-                                  //     this.state.dataSource1[a].nExecStateDesc='正在同步中'
-                                  //   }else{
-                                  //     message.error(res.data || "失败",1)
-                                  //   }
-                                  // }
-                                  // if(res.code===200 && res.data==null){
-                                  //   console.log(res)
-                                  //   message.success(res.data,5)
-                                  //   this.state.evt.setAttribute("disabled","true")
-                                  //   this.state.dataSource1[a].nExecStateDesc='正在同步中'
-                                  // }else{
-                                  //   message.error(res.data,3)
-                                  // }
                                 })
                                 this.setState({
                                   dataSource1:this.state.dataSource1
@@ -297,7 +236,7 @@ class TaskStatus extends Component {
                       console.log("错误1")
                       
                     }}
-                    disabled={false}
+                    disabled={record.zhuangtai}
                     >执行开始</Button>
                 </Fragment>
               )
@@ -374,32 +313,28 @@ class TaskStatus extends Component {
       Task("",1,null).then(res=>{
         console.log(1,res)
         if(res.code===200){
-          // res.data.list.map((item)=>{
-          //   item["fws"] = false
-          // })
-          // if(record.nExecStateDesc==="正在同步中"){
-          //   this.state.evt.setAttribute("disabled","true")
-          // }
            this.setState({
             dataSource1:res.data.list,
             total:res.data.total
-           }
-          //  ,()=>{
-          //   const p = this.state.dataSource1.map(item=>{
-          //     return(
-          //       item
-          //     )
-          //   })
-          //   if(p.nExecStateDesc==="正在同步中"){
-          //     this.state.evt.setAttribute("disabled","true")
-          //   }
-          //  }
-           )
+           },()=>{
+           this.state.dataSource1.map(item=>{
+             if(item.nExecStateDesc==="正在同步中"){
+               return(
+                 item.zhuangtai=true
+               )
+             }else{
+               return(
+                 item.zhuangtai=false
+               )
+             }
+            })
+           })
         }
       })
     }
     render() { 
-      let {dataSource1,dataSource2,dataSource3,key,nIfInvalid,msgList,common,iptValue,total,cId,currentPage,msg}=this.state
+      let { resetFields } = this.props.form
+      let {dataSource1,dataSource2,dataSource3,key,date,msgList,common,iptValue,total,cId,currentPage,msg}=this.state
         return ( 
           <div style={{paddingLeft:30,paddingRight:30}}>
             <Search
@@ -510,7 +445,19 @@ class TaskStatus extends Component {
                       dataSource1:res.data.list,
                       total: res.data.total,
                       common:""
-                     })
+                     },()=>{
+                      this.state.dataSource1.map(item=>{
+                        if(item.nExecStateDesc==="正在同步中"){
+                          return(
+                            item.zhuangtai=true
+                          )
+                        }else{
+                          return(
+                            item.zhuangtai=false
+                          )
+                        }
+                       })
+                      })
                   }
                 })
               }
@@ -546,14 +493,6 @@ class TaskStatus extends Component {
                   }
                 })
               }
-              // if(key===1){
-              //   this.setState({
-              //     dataSource: dataSource.push
-              //   })
-              // }
-              // if(key=2){
-              //   Task()
-              // }
             }}>
               <TabPane tab="已激活任务列表" key="1">
                 <Table columns={this.columns} 
@@ -561,15 +500,6 @@ class TaskStatus extends Component {
                     rowKey='cId'
                     pagination={false}
                     scroll={{y:350,x:false}}
-                    // onRow={record => {
-                    //   return {
-                    //     onClick: event => {console.log("需要的数据",event)}, // 点击行
-                    //     onDoubleClick: event => {},
-                    //     onContextMenu: event => {},
-                    //     onMouseEnter: event => {}, // 鼠标移入行
-                    //     onMouseLeave: event => {},
-                    //   };
-                    // }}
                 ></Table>
                 <Modal
                   bodyStyle={{height:"400px" ,width:"800px" , overflow:"auto"}}
@@ -581,14 +511,16 @@ class TaskStatus extends Component {
                   onOk={()=>{this.setState({
                     date:"",
                     visible:false,
-                    journal:[]
+                    journal:[],
+                    msgList:[]
                     // dateString:""
                   })}}
                   onCancel={()=>{this.setState({
                     visible:false,
                     date:"",
                     // dateString:""
-                    journal:[]
+                    journal:[],
+                    msgList:[]
                   },()=>{
                     this.disconnect = (a) => {//断开连接
                       this.clientRef.disconnect()
@@ -597,37 +529,22 @@ class TaskStatus extends Component {
                 >
                   <Fragment>
                     <DatePicker 
-                      // defaultValue={(Date,dateString)=>{
-                      //   console.log(Date,dateString)
-                      //   let time = new Date().format("YYYY-MM-DD")
-                      //   console.log("日期",time)
-                      // }}
-                      // defaultValue={sb}
-                      defaultValue={moment(this.state.date, dateFormat)} format={dateFormat}
+                    // 取消清除按钮
+                      allowClear ={false}
+                      defaultValue={moment(date=null?this.state.shijian:date, dateFormat)} format={dateFormat}
+                      placeholder="请选择日期时间"
                       onChange={(date,dateString)=>{
+                       this.setState({
+                        journal:[],
+                        msgList:[]
+                       })
                        console.log("点击日期",date,dateString)
-                      //  this.setState({
-                      //   dateString:dateString
-                      //  },()=>{
-                      //   showHisLog(cId,dateString)
-                      //   .then(res=>{
-                      //     console.log(res)
-                      //     this.setState({
-                      //       journal:res.data,
-                      //       msg:""
-                      //     },()=>{
-                      //       this.disconnect = (a) => {//断开连接
-                      //         this.clientRef.disconnect()
-                      //        }
-                      //     })
-                      //   })
-                      //  })
-                      //  const s = dateString.toString()
                       showHisLog(cId,dateString)
                       .then(res=>{
                         console.log(res)
                         this.setState({
                           journal:res.data,
+                          msgList:[]
                         },()=>{
                           this.disconnect = (a) => {//断开连接
                             this.clientRef.disconnect()
@@ -638,8 +555,11 @@ class TaskStatus extends Component {
                       //  console.log(s)
                     }}/>
                     <br />
+                    {/* 测试 环境*/}
                     <SockJsClient url='http://10.16.0.109:7070/etl-service/subTask' topics={['/topic/taskLog/' + cId + '/response']}
-                    // <SockJsClient url='http://10.16.100.96:7070/etl-service/subTask' topics={['/topic/taskLog/' + cId + '/response']}
+                    
+                    //  上线环境
+                    // <SockJsClient url='http://10.5.80.115:7070/etl-service/subTask' topics={['/topic/taskLog/' + cId + '/response']}
                     onMessage={(msg) => { 
                       msgList.push(msg)
                       this.setState({
@@ -647,7 +567,8 @@ class TaskStatus extends Component {
                       })
                      }}
                     ref={(client) => { this.clientRef = client }} />
-                    
+                    {/* 修改 */}
+                    {/* {this.state.msgList?} */}
                     {this.state.msgList.map(item=>{
                       return(
                         <div>
@@ -668,8 +589,7 @@ class TaskStatus extends Component {
                   title="预留参数"
                   visible={this.state.reserved}
                   onOk={(e)=>{
-                    // console.log("对象",this.state.obj,this.refs.item.value)
-                    this.state.evt=e.currentTarget
+                    // this.state.evt=e.currentTarget
                     const keywordArr = []
                     const long = this.state.params.length
                     for(let i=0; i<long; i++){
@@ -682,63 +602,83 @@ class TaskStatus extends Component {
                         this.state.obj[item]= keywordArr[index]
                       )
                     })
-                    // const love = this.state.obj
-                    // const c = this.refs
-                    // this.state.params.map(function(item,index){
-                    //   return(
-                    //     love[{item}]= c.item.value
-                    //   )
-                    // })
                     console.log("半夜12点了",this.state.obj)
-                    uploadParameters(cId,JSON.stringify(this.state.obj))
-                    .then(res=>{
-                      if(res.code===200){
-                        console.log("上传参数",res)
-                        // message.success("上传预留参数成功",3)
-                      }
-                    })
-                    startTask(cId)
-                    .then(res=>{
-                      console.log("成功失败数据",res)
-                      if(res.code===500){
-                        message.error("失败",3)
-                      }
-                      if(res.code===200 && res.data.length==0){
-                        let a = this.state.dataSource1.indexOf(this.state.text)
-                        this.state.evt.setAttribute("disabled","true")
-                        this.state.dataSource1[a].nExecStateDesc='正在同步中'
-                        this.state.dataSource1[a].dtBeginDate= this.state.localtime
-                        // message.success("成功",3)
-                        // const up = this.state.params.map(item=>{
-                        //   return(
-                        //     {item}
-                        //   )
-                        // })
-                        // const love = {up : this.state.Input}
-                      }
-                      if(res.code===200 && res.data.length!==0){
-                        message.error(res.data,3)
-                      }
-                    })
-                    this.setState({
-                      dataSource1:this.state.dataSource1
-                    },()=>{
-
-                    })
-                    // startTask(cId)
+                    let a = this.state.dataSource1.indexOf(this.state.text)
+                    // uploadParameters(cId,JSON.stringify(this.state.obj))
                     // .then(res=>{
                     //   if(res.code===200){
-                    //     console.log(res)
-                    //     message.success("成功",5)
-                    //   }else{
-                    //     message.error("失败",3)
+                    //     console.log("上传参数",res)
+                    //     let a = this.state.dataSource1.indexOf(this.state.text)
+                    //     console.log("下标",a)
+                    //     // message.success("上传预留参数成功",3)
+                    //     startTask(cId)
+                    //     .then(res=>{
+                    //       console.log("成功失败数据",res)
+                    //       if(res.code===500){
+                    //         message.error("失败",3)
+                    //       }
+                    //       if(res.code===200 && res.data.length==0){
+                    //         // this.state.dataSource1[a].nExecStateDesc='正在同步中'
+                    //         // this.state.dataSource1[a].zhuangtai=true
+                    //         // this.state.dataSource1[a].dtBeginDate= this.state.localtime
+                    //         // message.success("成功",3)
+                    //         this.setState({
+
+                    //         },()=>{
+                    //           this.state.text.nExecStateDesc='正在同步中'
+                    //           this.state.text.zhuangtai=true
+                    //           this.state.text.dtBeginDate= this.state.localtime
+                    //           message.success("成功",3)
+                    //         })
+                    //       }
+                    //       if(res.code===200 && res.data.length!==0){
+                    //         message.error(res.data,3)
+                    //       }
+                    //     })
                     //   }
                     // })
+                   
+                    uploadParameters(cId,JSON.stringify(this.state.obj))
+                    .then(res=>{
+                          if(res.code===500){
+                            message.error("失败",3)
+                          }
+                          if(res.code===200 && res.data.length==0){
+                            // const ly = this.state.dataSource1[a].nExecStateDesc = "正在同步中"
+                            // const lyy = this.state.dataSource1[a].zhuangtai = true
+                            // this.state.dataSource1[a].nExecStateDesc='正在同步中'
+                            // this.state.dataSource1[a].zhuangtai=true
+                            // this.state.dataSource1[a].dtBeginDate= this.state.localtime
+                            // message.success("成功",3)
+                            this.state.text.nExecStateDesc='正在同步中'
+                            this.state.text.zhuangtai=true
+                            this.state.text.dtBeginDate= this.state.localtime
+                            message.success("成功",3)
+                            // const data = dataSource1.map((item,index)=>{
+                            //    return(
+                            //      item
+                            //    )
+                            // })
+                            // this.setState({
+                            //   dataSource1:data
+                            // },()=>{
+                            //   this.state.text.nExecStateDesc='正在同步中'
+                            //   this.state.text.zhuangtai=true
+                            //   this.state.text.dtBeginDate= this.state.localtime
+                            //   message.success("成功",3)
+                            // })
+                          }
+                          if(res.code===200 && res.data.length!==0){
+                            message.error(res.data,3)
+                          }
+                    })
                     this.setState({
                       dataSource1:this.state.dataSource1,
                       reserved:false,
                       text:{},
-                      cId:""
+                      cId:"",
+                    },()=>{
+                      resetFields()
                     })
                   }}
                   onCancel={()=>{
@@ -751,7 +691,7 @@ class TaskStatus extends Component {
                 >
                   {this.state.params.map(function(item,index){
                     return(
-                    <div>{item}:<Input placeholder="用户输入值" id={"a" +index } key={"a" + index + index} value={this.state.valuee}/></div>
+                    <div>{item}:<Input placeholder="用户输入值" id={"a" +index } key={"a" + index + index} autocomplete="off"  /></div>
                     )
                   })}
                   {/* {this.state.params.map(function(item){
@@ -830,7 +770,19 @@ class TaskStatus extends Component {
                          this.setState({
                           dataSource1:res.data.list,
                           currentPage: page
-                         })
+                         },()=>{
+                          this.state.dataSource1.map(item=>{
+                            if(item.nExecStateDesc==="正在同步中"){
+                              return(
+                                item.zhuangtai=true
+                              )
+                            }else{
+                              return(
+                                item.zhuangtai=false
+                              )
+                            }
+                           })
+                          })
                       }
                     })
                   }}
@@ -894,4 +846,4 @@ class TaskStatus extends Component {
     }
 }
  
-export default TaskStatus;
+export default Form.create()(TaskStatus);

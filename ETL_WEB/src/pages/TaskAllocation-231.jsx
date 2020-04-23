@@ -37,7 +37,7 @@ class TaskAllocation extends Component {
             theDismask:false,
             cParamVisible:false,
             filedparams:[],
-            nb:2
+            nb:3
          }
     }
     
@@ -50,11 +50,11 @@ class TaskAllocation extends Component {
             selectedInfo:Info
           },()=>{
             if(this.state.selectedInfo.node.props.dataRef.nLevel==''||this.state.selectedInfo.node.props.dataRef.nLevel==null){
-              if(this.state.showTask==="start"){
-                message.warning("当前正在查看/增加一个任务！",4)
-                return
-              }
-              this.showUpdateModal()
+              this.setState({
+                current:0,
+              },()=>{
+                this.showUpdateModal()
+              })
             }else{
              this.closeTheCreat()
             }
@@ -118,12 +118,18 @@ class TaskAllocation extends Component {
       }
     onCreate=()=>{
         const form = this.form;
+        // let {dispatch} =  this.props
         form.validateFields((err, values) => {
           console.log(err,values)
           if (err) {
             return;
           }
         })
+        // xiugai
+        // const newDatas = {
+        //   cBusinessId: selectedInfo.node.props.dataRef.cId
+        // }
+        // dispatch({type: 'TaskAllocationModel/getQueryTreeList', payload: { newDatas,callback}});
       }
    
     showAddModal=(show)=>{
@@ -182,16 +188,25 @@ class TaskAllocation extends Component {
               return
             }
             if(this.state.showTask==="start"){
+              // const newDatas = {
+                const newDatas = {
+                  cId: selectedInfo.node.props.dataRef.cId,
+                }
+                const callback =()=>{}
+                dispatch({type: 'TaskAllocationModel/getQueryTreeList', payload: { newDatas,callback}});
+              // }
               this.setState({
                 current:0
               })
             }
-            const datas = {
+            const newDatas = {
+              cId: selectedInfo.node.props.dataRef.cId,
               // cBusinessId: selectedInfo.node.props.dataRef.cId
             }
+            const datas={}
             const callback =()=>{}
              //查询前置任务列表
-            dispatch({type: 'TaskAllocationModel/getQueryTreeList', payload: { datas,callback}});
+            dispatch({type: 'TaskAllocationModel/getQueryTreeList', payload: { newDatas,callback}});
             //查询一次性写入大小
             dispatch({type: 'TaskAllocationModel/getDataxBatchSize', payload: { datas,callback}});
             //获取一次性写入速率
@@ -419,31 +434,80 @@ class TaskAllocation extends Component {
       });
     }
     oncParamCreate=()=>{
-      let {theDiled} = this.state
+      let {theDiled,RSCData} = this.state
+      let sqll = RSCData.cReadSqlMain
+      // let { cParamData,TDatasourceNoPageList } = this.props
+      // console.log("数据源",TDatasourceNoPageList)
+      // TDatasourceNoPageList.map(item=>{
+      //   return(
+      //     console.log("数据源内容",item)
+      //   )
+      // })
       const form = this.cParamform;
       form.validateFields((err, values) => {
         console.log(err,values,'获取的hdfs')
         let datas=changeStr(values)
+        console.log("数据data",datas)
         if (err) {
           return;
         }
         if(theDiled){
           const aAry = [];
           for (const key in datas) {
-            if (datas.hasOwnProperty(key)) {
-            //  let name = cParamData[key]
-              if (key.indexOf("Type") < 0) {
-                console.log(key);
-                let keyType = `${key}Type`;
-                let obj = {
-                  name: datas[key],
-                  type: datas[keyType],
-                };
-                aAry.push(obj);
+            if(Object.prototype.toString.call(datas[key]) === '[object Object]'){
+              for (const ke in datas[key]){
+                if(datas[key].hasOwnProperty(ke)){
+                  if(ke.indexOf("Type")<0){
+                    let keType = `${ke}Type`;
+                    let obj = {
+                      name : datas[key][ke],
+                      type : datas[key][keType]
+                    }
+                    aAry.push(obj);
+                  }
+                }
+              }
+            }else{
+              if (datas.hasOwnProperty(key)) {
+                // if(Object.prototype.toString.call(datas[key]) === '[object Object]'){
+                  //   let obj = {
+                  //     name : datas[key][0],
+                  //     type : datas[key][1],
+                  //     name1 : datas[key][2],
+                  //     type2 : datas[key][2],
+                  //   }
+                  //   aAry.push(obj);
+              //  let name = cParamData[key]
+                // for (const ke in datas[key]){
+                //   if(datas[key].hasOwnProperty(ke)){
+                //     if(ke.indexOf("Type")<0){
+                //       let keType = `${ke}Type`;
+                //       let obj = {
+                //         name : datas[key][ke],
+                //         type : datas[key][keType]
+                //       }
+                //       aAry.push(obj);
+                //     }
+                //   }
+                // }
+                if (key.indexOf("Type") < 0) {
+                  console.log("第一","key",key);
+                  console.log("重要的key",[key])
+                  console.log("刘勇",datas[key])
+                  
+                  let keyType = `${key}Type`;
+                  let obj = {
+                    name: datas[key],
+                    type: datas[keyType],
+                  };
+                  aAry.push(obj);
+                }
               }
             }
           }
+          console.log("太难了",aAry)
           let p = JSON.stringify(aAry)
+          // 映射接口
           fieldMapping(this.state.nb,p)
           .then(res=>{
             if(res.code===200){
@@ -464,16 +528,47 @@ class TaskAllocation extends Component {
               }
             }
           })
+          // console.log(aAry)
+          // console.log(JSON.stringify(aAry))
+          // const WSCform = this.WSCform;
+          // WSCform.setFieldsValue({
+          //   // cFieldOrder:JSON.stringify(aAry)
+          //   cFieldOrder:this.state.filedparams
+          // })
+
         }else{
           const ary = [];
           for (const key in datas) {
-            if (datas.hasOwnProperty(key)) {
-              let obj1 = {
-                name: datas[key]
+            if(Object.prototype.toString.call(datas[key]) === '[object Object]'){
+              for (const ke in datas[key]){
+                if(datas[key].hasOwnProperty(ke)){
+                  let obj1 = {
+                    name : datas[key][ke]
+                  }
+                  ary.push(obj1)
+                }
               }
-              ary.push(obj1)
+            }else{
+              if (datas.hasOwnProperty(key)) {
+                // ary.push(datas[key]);
+                // for (const ke in datas[key]){
+                //   if(datas[key].hasOwnProperty(ke)){
+                //     let obj1 = {
+                //       name : datas[key][ke]
+                //     }
+                //     ary.push(obj1)
+                //   }
+                // }
+                let obj1 = {
+                  name: datas[key]
+                }
+                ary.push(obj1)
+              }
             }
           }
+          console.log("太难了",ary)
+          // console.log("我刚修改的",ary.join(";"));
+          // console.log(ary.join(";"));
           let ps = JSON.stringify(ary)
           fieldMapping(this.state.nb,ps)
           .then(res=>{
@@ -485,6 +580,8 @@ class TaskAllocation extends Component {
                 })
                 const WSCform = this.WSCform;
                 WSCform.setFieldsValue({
+                  // cFieldOrder:ary.join(";")
+                  // cFieldOrder:JSON.stringify(ary)
                   cFieldOrder:this.state.filedparams
                 })
               }else{
@@ -600,6 +697,7 @@ class TaskAllocation extends Component {
                     }
                     //获取数据表
                     this.props.dispatch({type: 'TaskAllocationModel/getQueryTable', payload: { datas,callback}});
+                    // huoqu xieru
                     this.props.dispatch({
                       type: 'TaskAllocationModel/getQueryWriteMode',
                       payload: { theDatas,Tcallback},
@@ -609,6 +707,7 @@ class TaskAllocation extends Component {
                     }
                     let writecallback =()=>{
                     }
+                    // huoqu yasuo
                     this.props.dispatch({
                         type: 'TaskAllocationModel/getQueryWriteCompress',
                         payload: { writedatas,writecallback},
@@ -703,8 +802,10 @@ class TaskAllocation extends Component {
             })
             if(DRCData.nIfSchedule==1){
               this.setState({
+                // cron表达式 是否必填
                 theDisabled:true
               },()=>{
+                // cron表达式  根据选项 生成cron表达式
                 DRCform.setFieldsValue({
                   radioCycle: DRCData.radioCycle,
                   radioGroup: DRCData.radioGroup,
@@ -723,6 +824,7 @@ class TaskAllocation extends Component {
           this.setState({ current:1},()=>{
             const RSCform = this.RSCform;
             console.log(RSCData)
+            // 
             let newvalue=this.state.theRSCDisabled?"6":"0"
             if (newvalue=='6') {
               this.setState({ theRSCDisabled:true },()=>{
@@ -765,13 +867,14 @@ class TaskAllocation extends Component {
           message.warning("选择了一个任务不能进行新建任务",4)
           return
         }
-        const datas = {
-          // cBusinessId: selectedInfo.node.props.dataRef.cId
+        const newDatas = {
+          cBusinessId: selectedInfo.node.props.dataRef.cId
         }
         const callback =()=>{}
-        console.log(datas)
+        const datas = {}
+        // console.log(datas)
         //查询前置任务列表
-        dispatch({type: 'TaskAllocationModel/getQueryTreeList', payload: { datas,callback}});
+        dispatch({type: 'TaskAllocationModel/getQueryTreeList', payload: { newDatas,callback}});
         //查询一次性写入大小
         dispatch({type: 'TaskAllocationModel/getDataxBatchSize', payload: { datas,callback}});
         //获取一次性写入速率
@@ -801,15 +904,15 @@ class TaskAllocation extends Component {
     submitFrom=()=>{
       let {dispatch,SingleJson} = this.props
       let {selectedInfo,DRCData,RSCData,taskUplod} = this.state
-      this.setState({
-        showTask:"load"
-      })
       const WSCform = this.WSCform;
       WSCform.validateFields((err, values) => {
         console.log(err,values)
         if (err) {
           return;
         }
+        this.setState({
+          showTask:"load"
+        })
         let valuedata=changeStr(values)
         console.log(valuedata,DRCData,RSCData,'所有数据')
         this.setState({WSCData:valuedata});
@@ -1659,6 +1762,7 @@ generateCron=()=>{
       wrapperCol: { span: 16 },
     };
     const loop = data =>
+
         data.map(item => {
           if (item.childList && item.childList.length) {
             return (
@@ -1671,7 +1775,7 @@ generateCron=()=>{
         });
     const infoText = (
       <ul style={{width: 400, height: 50, overflow: "auto"}}>
-        <li><p>只可选择同模块下得其他任务作为前置任务</p></li>
+        <li><p>只可选择同模块下的其他任务作为前置任务</p></li>
       </ul>
     );
    return (
@@ -1706,7 +1810,7 @@ generateCron=()=>{
           </FormItem> */}
           <FormItem {...formItemLayout} label="前置任务:">
            {getFieldDecorator('preTaskIds', {
-              rules: [{ required: true, message: '请选择前置任务' }]
+              // rules: [{ required: true, message: '请选择前置任务' }]
            })(
               <Select
                   showSearch
@@ -1775,7 +1879,8 @@ generateCron=()=>{
           </FormItem>
           <FormItem {...formItemLayout} label="一次性写入大小:">
               {getFieldDecorator('nBatchSize', {
-              rules: [{ required: true, message: '请选择一次性写入大小' }]
+              rules: [{ required: true, message: '请选择一次性写入大小' }],
+              initialValue: BatchSize[0].cCodeName
               })(
                 <Select
                   showSearch
@@ -1793,7 +1898,8 @@ generateCron=()=>{
           </FormItem>
           <FormItem {...formItemLayout} label="线程数:">
               {getFieldDecorator('nChannel', {
-              rules: [{ required: true, message: '请选择线程数!' },]
+              rules: [{ required: true, message: '请选择线程数!' },],
+              initialValue: Channel[2].cCodeName
               })(
                 <Select
                 showSearch
@@ -1811,12 +1917,13 @@ generateCron=()=>{
           </FormItem>
           <FormItem {...formItemLayout} label="读取速度:">
               {getFieldDecorator('nByte', {
-              rules: [{ required: true, message: '请选择读取速度!' },]
+              rules: [{ required: true, message: '请选择读取速度!' },],
+              initialValue: Byte[0].cCodeName
               })(
                 <Select
                 showSearch
                 style={{ width: "100%" }}
-                placeholder="请选择读取速度"
+                // placeholder="请选择读取速度"
                 optionFilterProp="children"
               >
                 {Byte.map((item,index)=>{
@@ -1829,7 +1936,8 @@ generateCron=()=>{
           </FormItem>
           <FormItem {...formItemLayout} label="读取行数:">
               {getFieldDecorator('nRecord', {
-              rules: [{ required: true, message: '请选择读取行数!'},]
+              rules: [{ required: true, message: '请选择读取行数!'},],
+              initialValue: Record[0].cCodeName
               })(
                 <Select
                 showSearch
@@ -1845,7 +1953,8 @@ generateCron=()=>{
           </FormItem>
           <FormItem {...formItemLayout} label="日志保留时长:">
               {getFieldDecorator('nLogRetainTime', {
-              rules: [{ required: true, message: '请选择日志保留时长!'},]
+              rules: [{ required: true, message: '请选择日志保留时长!'},],
+              initialValue: TasKData[0]+"天"
               })(
                 <Select
                 showSearch
@@ -2009,7 +2118,8 @@ class RSCModel  extends React.Component {
 
                   <FormItem {...formItemLayout} label="文件类型:">
                       {getFieldDecorator('cFileType', {
-                      rules: [{ required: true, message: '请选择文件类型！' }]
+                      rules: [{ required: true, message: '请选择文件类型！' }],
+                      initialValue: HdfsFileTypeData[0].cCodeName
                       })(
                         <Select
                           showSearch
@@ -2034,7 +2144,8 @@ class RSCModel  extends React.Component {
                   
                   <FormItem {...formItemLayout} label="编码:">
                       {getFieldDecorator('cEncoding', {
-                      rules: [{ required: true, message: '请选择编码' }, ]
+                      rules: [{ required: true, message: '请选择编码' }, ],
+                      initialValue: HdfsEncod[0].cCodeName
                       })(
                         <Select
                           showSearch
@@ -2249,7 +2360,7 @@ class WSCModel  extends React.Component {
              
                  <FormItem {...formItemLayout} label="文件类型" >
                           {getFieldDecorator('cFileType',
-                            {rules: [{ required: true, message: '请选择文件类型！' }]})(
+                            {rules: [{ required: true, message: '请选择文件类型！' }],initialValue: HafsWriteFieType[0].cCodeName})(
                               <Select
                               showSearch
                               style={{ width: "100%" }}

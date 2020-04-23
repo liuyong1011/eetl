@@ -562,12 +562,12 @@ const TaskAllocationModel = {
     },
     //查询前置任务列表树形
     // getQueryTreeList异步方法  payload为触发事件参数 call 调接口   put触发同步方法
-    *getQueryTreeList({payload:{ datas,callback }},{ call, put, select }) {
-      console.log(datas) 
-      const data = yield call(getQueryTreeList,datas);
+    *getQueryTreeList({payload:{ newDatas,callback }},{ call, put, select }) {
+      console.log("六六六",newDatas) 
+      const data = yield call(getQueryTreeList,newDatas);
       if(data.code === 200){
           yield put({ type: 'setQueryTreeList', payload:{
-            QueryTreeList: data.data.list
+            QueryTreeList: data.data
           }});
           callback();
       }else {
