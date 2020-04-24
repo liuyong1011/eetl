@@ -562,11 +562,9 @@ class TaskStatus extends Component {
                       //  console.log(s)
                     }}/>
                     <br />
-                    {/* 测试 环境*/}
-                    {/* <SockJsClient url='http://10.16.0.109:7070/etl-service/subTask' topics={['/topic/taskLog/' + cId + '/response']} */}
+                    <SockJsClient url='http://10.16.0.109:7070/etl-service/subTask' topics={['/topic/taskLog/' + cId + '/response']}
                     
-                    {/* //  上线环境 */}
-                   <SockJsClient url='http://10.5.80.115:7070/etl-service/subTask' topics={['/topic/taskLog/' + cId + '/response']}
+                  // {/* <SockJsClient url='http://10.5.80.115:7070/etl-service/subTask' topics={['/topic/taskLog/' + cId + '/response']} */}
                     onMessage={(msg) => { 
                       msgList.push(msg)
                       this.setState({

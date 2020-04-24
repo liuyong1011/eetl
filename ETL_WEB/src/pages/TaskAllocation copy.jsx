@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import { Tree ,Row,Col,Table,Icon,Modal,Form,Input,Radio,Spin,Button,message,TreeSelect,Menu,Dropdown,Steps,Select,Popover,Result} from 'antd';
 import {changeStr} from '@/utils/utils' //公用组件
@@ -985,6 +984,7 @@ class TaskAllocation extends Component {
               nIfActivate: DRCData.nIfActivate==1?DRCData.nIfActivate:0, //是否激活 1是0不是
               nIfInvalid: DRCData.nIfInvalid==1?DRCData.nIfInvalid:0,//是否有效 1 是0不是
               nLogRetainTime: DRCData.nLogRetainTime?DRCData.nLogRetainTime:SingleJson.tTaskConfig.nLogRetainTime,// 日志保留时长
+              // 修改为下：
               // nLogRetainTime: parseInt(DRCData.nLogRetainTime?DRCData.nLogRetainTime:SingleJson.tTaskConfig.nLogRetainTime),// 日志保留时长
               preTaskIds: DRCData.preTaskIds||DRCData.preTaskIds==""?DRCData.preTaskIds.join(","):SingleJson.tTaskConfig.preTaskIds//选择的前置任务的cid 多个逗号分开传string
             },
@@ -1045,8 +1045,9 @@ class TaskAllocation extends Component {
               cName: DRCData.cName?DRCData.cName:null,
               nIfActivate: DRCData.nIfActivate==1?DRCData.nIfActivate:0, //是否激活 1是0不是
               nIfInvalid: DRCData.nIfInvalid==1?DRCData.nIfInvalid:0,//是否有效 1 是0不是
-              nLogRetainTime: DRCData.nLogRetainTime?DRCData.nLogRetainTime:"7",// 日志保留时长
-              // nLogRetainTime: parseInt(DRCData.nLogRetainTime?DRCData.nLogRetainTime:"7"),// 日志保留时长
+              // nLogRetainTime: DRCData.nLogRetainTime?DRCData.nLogRetainTime:"7",// 日志保留时长
+              // 修改为下
+              nLogRetainTime: parseInt(DRCData.nLogRetainTime?DRCData.nLogRetainTime:"7"),// 日志保留时长
               preTaskIds: DRCData.preTaskIds?DRCData.preTaskIds.join(","):null//选择的前置任务的cid 多个逗号分开传string
             },
             tExtractionRuleConfig:{
@@ -1905,7 +1906,7 @@ generateCron=()=>{
           <FormItem {...formItemLayout} label="一次性写入大小:">
               {getFieldDecorator('nBatchSize', {
               rules: [{ required: true, message: '请选择一次性写入大小' }],
-              // initialValue: BatchSize[0].cCodeName
+              initialValue: BatchSize[0].cCodeName
               })(
                 <Select
                   showSearch
@@ -1924,7 +1925,7 @@ generateCron=()=>{
           <FormItem {...formItemLayout} label="线程数:">
               {getFieldDecorator('nChannel', {
               rules: [{ required: true, message: '请选择线程数!' },],
-              // initialValue: Channel[2].cCodeName
+              initialValue: Channel[2].cCodeName
               })(
                 <Select
                 showSearch
@@ -1943,7 +1944,7 @@ generateCron=()=>{
           <FormItem {...formItemLayout} label="读取速度:">
               {getFieldDecorator('nByte', {
               rules: [{ required: true, message: '请选择读取速度!' },],
-              // initialValue: Byte[0].cCode
+              initialValue: Byte[0].cCodeName
               })(
                 <Select
                 showSearch
@@ -1962,7 +1963,7 @@ generateCron=()=>{
           <FormItem {...formItemLayout} label="读取行数:">
               {getFieldDecorator('nRecord', {
               rules: [{ required: true, message: '请选择读取行数!'},],
-              // initialValue: Record[0].cCodeName
+              initialValue: Record[0].cCodeName
               })(
                 <Select
                 showSearch
@@ -1979,7 +1980,7 @@ generateCron=()=>{
           <FormItem {...formItemLayout} label="日志保留时长:">
               {getFieldDecorator('nLogRetainTime', {
               rules: [{ required: true, message: '请选择日志保留时长!'},],
-              // initialValue: TasKData[0]+"天"
+              initialValue: TasKData[0]+"天"
               })(
                 <Select
                 showSearch
@@ -2161,7 +2162,7 @@ class RSCModel  extends React.Component {
                   <FormItem {...formItemLayout} label="文件类型:">
                       {getFieldDecorator('cFileType', {
                       rules: [{ required: true, message: '请选择文件类型！' }],
-                      // initialValue: HdfsFileTypeData[0].cCodeName
+                      initialValue: HdfsFileTypeData[0].cCodeName
                       })(
                         <Select
                           showSearch
@@ -2187,7 +2188,7 @@ class RSCModel  extends React.Component {
                   <FormItem {...formItemLayout} label="编码:">
                       {getFieldDecorator('cEncoding', {
                       rules: [{ required: true, message: '请选择编码' }, ],
-                      // initialValue: HdfsEncod[0].cCodeName
+                      initialValue: HdfsEncod[0].cCodeName
                       })(
                         <Select
                           showSearch
@@ -2396,6 +2397,7 @@ class WSCModel  extends React.Component {
            }
             </>
             :null
+
           }
           {theDiled?
                 <>
